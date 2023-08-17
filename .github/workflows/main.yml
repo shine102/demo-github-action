@@ -14,4 +14,4 @@ jobs:
         env: 
           SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
         with: 
-          args: --severity-threshold=high
+          args: --severity-threshold=critical --severity-threshold=high
