@@ -1,0 +1,17 @@
+name: ci-cd
+
+on: 
+  push:
+    branches: [ master ]
+
+jobs:
+  scan-iac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Snyk to check configuration files for security issues
+        uses: snyk/actions/iac@master
+        env: 
+          SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
+        with: 
+          args: --severity-threshold=high|critical
