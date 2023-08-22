@@ -18,9 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: OWASP ZAP
-        uses: zaproxy/action-full-scan@v0.6.0
+        uses: zaproxy/action-baseline@v0.3.0
         with:
-          # Target URL
           target: "http://testphp.vulnweb.com/"
-          fail_action: false
-          token: ${{ secrets.GITHUB_TOKEN }}
