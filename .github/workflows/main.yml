@@ -13,23 +13,14 @@ jobs:
         uses: snyk/actions/iac@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
-        # with: 
-        #   args: --severity-threshold=high
-  #     - name: Report status
-  #       if: failure()
-  #       uses: archive/github-actions-slack@v2.0.0
-  #       with:
-  #         slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
-  #         slack-channel: ${{ secrets.SLACK_CHANNEL }}
-  #         slack-text: 'Snyk found issues in your IaC files'
-  # dast-scan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: OWASP ZAP
-  #         uses: zaproxy/action-baseline@v0.4.0
-  #         with:
-  #           # Target URL
-  #           target: "http://localhost:4000"
-  #           fail_action: false
-  #           token: $
-  #           issue_title: Security Tests
+        continue-on-error: true
+  dast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.6.0
+        with:
+          # Target URL
+          target: "http://testphp.vulnweb.com/"
+          fail_action: false
+          token: ${{ secrets.GITHUB_TOKEN }}
