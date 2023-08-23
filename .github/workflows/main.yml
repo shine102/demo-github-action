@@ -36,5 +36,11 @@ jobs:
       - name: Archive result
         uses: actions/upload-artifact@v3
         with:
-          name: report
+          name: dast json report
           path: report_json.json
+      - name: Archive result
+        uses: actions/upload-artifact@v3
+        with:
+          name: dast html report
+          path: report_html.html
+      
