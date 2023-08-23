@@ -33,9 +33,8 @@ jobs:
         with:
           target: "http://testphp.vulnweb.com/"
           fail_action: false
-          cmd_options: '-J dast-report.json -m 2'
       - name: Archive result
         uses: actions/upload-artifact@v3
         with:
           name: report
-          path: dast-report.json
+          path: report_json.json
