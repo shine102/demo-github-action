@@ -5,26 +5,26 @@ on:
     branches: [ master ]
 
 jobs:
-  scan-iac:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Snyk to check configuration files for security issues
-        uses: snyk/actions/iac@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
-        continue-on-error: true
-        with:
-          args: --sarif-file-output=snyk.sarif
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: report
-          path: snyk.sarif
+  # scan-iac:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Run Snyk to check terraform files for security issues
+  #       uses: snyk/actions/iac@master
+  #       env:
+  #         SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
+  #       continue-on-error: true
+  #       with:
+  #         args: --sarif-file-output=snyk_iac.sarif
+  #     - name: Upload result to GitHub Code Scanning
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: snyk.sarif
+  #     - name: Archive results
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: report
+  #         path: snyk.sarif
   dast-scan:
     runs-on: ubuntu-latest
     steps:
@@ -32,3 +32,9 @@ jobs:
         uses: zaproxy/action-baseline@v0.3.0
         with:
           target: "http://testphp.vulnweb.com/"
+          cmd_options: '-J dast-report.json -m 2'
+      - name: Archive result
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: dast-report.json
