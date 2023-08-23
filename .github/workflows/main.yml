@@ -5,26 +5,34 @@ on:
     branches: [ master ]
 
 jobs:
-  # scan-iac:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Run Snyk to check terraform files for security issues
-  #       uses: snyk/actions/iac@master
-  #       env:
-  #         SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
-  #       continue-on-error: true
-  #       with:
-  #         args: --sarif-file-output=snyk_iac.sarif
-  #     - name: Upload result to GitHub Code Scanning
-  #       uses: github/codeql-action/upload-sarif@v2
-  #       with:
-  #         sarif_file: snyk.sarif
-  #     - name: Archive results
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: report
-  #         path: snyk.sarif
+  scan-iac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Snyk to check terraform files for security issues
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
+        continue-on-error: true
+        with:
+          args: --sarif-file-output=snyk_iac.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: snyk.sarif
+      - name: Fail pipeline if finding with severity high found
+        run: |
+          if grep -q '"level": "high"' snyk.sarif; then
+            echo "found"
+            exit 1
+          else
+            echo "Not found"
+          fi
   dast-scan:
     runs-on: ubuntu-latest
     steps:
