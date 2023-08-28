@@ -45,9 +45,6 @@ jobs:
           name: zap_scan
       - name: Fail pipeline if finding with severity high found  
         run: |
-          pwd
-          ls -la
-          unzip zap_scan
           if ! grep -q '| High | 0 |' report_md.md; then
             echo "found!"
             exit 1
