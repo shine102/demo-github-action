@@ -39,10 +39,14 @@ jobs:
         with:
           target: "http://testphp.vulnweb.com/"
           fail_action: false
-      - name: Fail pipeline if finding with severity high found
+      # - name: Pull report
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: zap_scan
+      - name: Fail pipeline if finding with severity high found  
         run: |
           sudo apt-get install unzip -y
-          unzip zap-scan
+          unzip zap_scan
           if ! grep -q '| High | 0 |' report_md.md; then
             echo "found!"
             exit 1
