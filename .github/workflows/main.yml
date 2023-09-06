@@ -53,7 +53,7 @@ jobs:
     name: Infracost
     runs-on: ubuntu-latest
     env:
-      TF_ROOT: terraform
+      TF_ROOT: terraform/module
     permissions:
       contents: read
       # Required to post comments
