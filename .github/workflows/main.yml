@@ -1,7 +1,7 @@
 name: ci-cd
 
 on: 
-  push:
+  pull_request:
     branches: [ master ]
 
 jobs:
@@ -31,21 +31,88 @@ jobs:
   #           echo "found!"
   #           exit 1
   #         fi
-  dast-scan:
+  # dast-scan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: OWASP ZAP
+  #       uses: zaproxy/action-baseline@v0.9.0
+  #       with:
+  #         target: "http://testphp.vulnweb.com/"
+  #         fail_action: false
+  #     - name: Pull report
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: zap_scan
+  #     - name: Fail pipeline if finding with severity high found  
+  #       run: |
+  #         if ! grep -q '| High | 0 |' report_md.md; then
+  #           echo "found!"
+  #           exit 1
+  #         fi
+  infracost:
+    name: Infracost
     runs-on: ubuntu-latest
+    env:
+      TF_ROOT: terraform/module
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    permissions:
+      contents: read
+      # Required to post comments
+      pull-requests: write
     steps:
-      - name: OWASP ZAP
-        uses: zaproxy/action-baseline@v0.9.0
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v2
         with:
-          target: "http://testphp.vulnweb.com/"
-          fail_action: false
-      - name: Pull report
-        uses: actions/download-artifact@v3
-        with:
-          name: zap_scan
-      - name: Fail pipeline if finding with severity high found  
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Checkout base branch
+        uses: actions/checkout@v3
+      
+      - name: Generate Infracost cost estimate without terraform plan
         run: |
-          if ! grep -q '| High | 0 |' report_md.md; then
-            echo "found!"
-            exit 1
-          fi
+          infracost breakdown --path=${TF_ROOT} \
+                              --format=json \
+                              --out-file=/tmp/infracost-1.json
+      
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: report without terraform plan
+          path: /tmp/infracost-1.json
+
+      - name: Post Infracost comment 
+        run: |
+          infracost comment github --path=/tmp/infracost-1.json \
+                                    --repo=$GITHUB_REPOSITORY \
+                                    --github-token=${{github.token}} \
+                                    --pull-request=${{github.event.pull_request.number}} \
+                                    --behavior=update
+
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Generate Infracost cost estimate with terraform plan
+        
+        run: |
+          cd ${TF_ROOT}
+          terraform init
+          terraform plan -no-color -out=/tmp/plan.out
+          terraform show -json /tmp/plan.out > /tmp/plan.json
+          infracost breakdown --path=/tmp/plan.json \
+                              --format=json \
+                              --out-file=/tmp/infracost-2.json
+
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: report without terraform plan
+          path: /tmp/infracost-1.json
+      - name: Post Infracost comment
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+                                    --repo=$GITHUB_REPOSITORY \
+                                    --github-token=${{github.token}} \
+                                    --pull-request=${{github.event.pull_request.number}} \
+                                    --behavior=update
