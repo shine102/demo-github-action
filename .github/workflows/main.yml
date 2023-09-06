@@ -93,8 +93,9 @@ jobs:
       - name: Generate Infracost cost estimate with terraform plan
         
         run: |
-          terraform init ${TF_ROOT}
-          terraform plan -no-color -out=/tmp/plan.out ${TF_ROOT}
+          cd ${TF_ROOT}
+          terraform init
+          terraform plan -no-color -out=/tmp/plan.out
           terraform show -json /tmp/plan.out > /tmp/plan.json
           infracost breakdown --tfjson /tmp/plan.json \
                     --path=${TF_ROOT} \
