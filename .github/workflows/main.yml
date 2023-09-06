@@ -108,10 +108,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: report without terraform plan
-          path: /tmp/infracost-1.json
+          path: /tmp/infracost-2.json
+
       - name: Post Infracost comment
         run: |
-          infracost comment github --path=/tmp/infracost.json \
+          infracost comment github --path=/tmp/infracost-2.json \
                                     --repo=$GITHUB_REPOSITORY \
                                     --github-token=${{github.token}} \
                                     --pull-request=${{github.event.pull_request.number}} \
