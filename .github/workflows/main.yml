@@ -80,7 +80,7 @@ jobs:
 
       - name: Checkout pr branch
         uses: actions/checkout@v3
-      
+       
       - name: Generate Infracost cost estimate without terraform plan
         run: |
           infracost diff --path=${TF_ROOT} \
