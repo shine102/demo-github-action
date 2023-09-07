@@ -70,50 +70,50 @@ jobs:
       - name: Checkout pr branch
         uses: actions/checkout@v3
       
-      # - name: Generate Infracost cost estimate without terraform plan
-      #   run: |
-      #     infracost breakdown --path=${TF_ROOT} \
-      #                         --format=json \
-      #                         --out-file=/tmp/infracost-1.json
-      
-      # - name: Archive results
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: report without terraform plan
-      #     path: /tmp/infracost-1.json
-
-      # - name: Post Infracost comment 
-      #   run: |
-      #     infracost comment github --path=/tmp/infracost-1.json \
-      #                               --repo=$GITHUB_REPOSITORY \
-      #                               --github-token=${{github.token}} \
-      #                               --pull-request=${{github.event.pull_request.number}} \
-      #                               --behavior=update
-
-      - name: Set up terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Generate Infracost cost estimate with terraform plan
-        
+      - name: Generate Infracost cost estimate without terraform plan
         run: |
-          cd ${TF_ROOT}
-          terraform init
-          terraform plan -no-color -out=/tmp/plan.out
-          terraform show -json /tmp/plan.out > /tmp/plan.json
-          infracost breakdown --path=/tmp/plan.json \
+          infracost breakdown --path=${TF_ROOT} \
                               --format=json \
-                              --out-file=/tmp/infracost-2.json
-
+                              --out-file=/tmp/infracost-1.json
+      
       - name: Archive results
         uses: actions/upload-artifact@v3
         with:
           name: report without terraform plan
-          path: /tmp/infracost-2.json
+          path: /tmp/infracost-1.json
 
-      - name: Post Infracost comment
+      - name: Post Infracost comment 
         run: |
-          infracost comment github --path=/tmp/infracost-2.json \
+          infracost comment github --path=/tmp/infracost-1.json \
                                     --repo=$GITHUB_REPOSITORY \
                                     --github-token=${{github.token}} \
                                     --pull-request=${{github.event.pull_request.number}} \
                                     --behavior=update
+
+      # - name: Set up terraform
+      #   uses: hashicorp/setup-terraform@v2
+
+      # - name: Generate Infracost cost estimate with terraform plan
+        
+      #   run: |
+      #     cd ${TF_ROOT}
+      #     terraform init
+      #     terraform plan -no-color -out=/tmp/plan.out
+      #     terraform show -json /tmp/plan.out > /tmp/plan.json
+      #     infracost breakdown --path=/tmp/plan.json \
+      #                         --format=json \
+      #                         --out-file=/tmp/infracost-2.json
+
+      # - name: Archive results
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: report without terraform plan
+      #     path: /tmp/infracost-2.json
+
+      # - name: Post Infracost comment
+      #   run: |
+      #     infracost comment github --path=/tmp/infracost-2.json \
+      #                               --repo=$GITHUB_REPOSITORY \
+      #                               --github-token=${{github.token}} \
+      #                               --pull-request=${{github.event.pull_request.number}} \
+      #                               --behavior=update
