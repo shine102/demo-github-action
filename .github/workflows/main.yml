@@ -53,7 +53,7 @@ jobs:
     name: Infracost
     runs-on: ubuntu-latest
     env:
-      TF_ROOT: terraform/grunt
+      TF_ROOT: terraform/grunt 
       # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       # AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
