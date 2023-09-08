@@ -54,9 +54,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TF_ROOT: terraform/grunt
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
     permissions:
       contents: read
       # Required to post comments
@@ -67,24 +67,36 @@ jobs:
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Checkout pr branch
+      - name: Checkout base branch
         uses: actions/checkout@v3
-      
-      - name: Generate Infracost cost estimate without terraform plan
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
+      - name: Generate Infracost cost estimate baseline
         run: |
           infracost breakdown --path=${TF_ROOT} \
                               --format=json \
-                              --out-file=/tmp/infracost-1.json
+                              --out-file=/tmp/infracost-base.json
+  
+      - name: Checkout pr branch
+        uses: actions/checkout@v3
+      
+      - name: Generate Infracost cost diff
+        run: |
+          infracost diff --path=${TF_ROOT} \
+                        --format=json \
+                        --compare-to=/tmp/infracost-base.json \
+                        --out-file=/tmp/infracost.json
       
       - name: Archive results
         uses: actions/upload-artifact@v3
         with:
-          name: report without terraform plan
-          path: /tmp/infracost-1.json
+          name: report
+          path: /tmp/infracost.json
 
       - name: Post Infracost comment 
         run: |
-          infracost comment github --path=/tmp/infracost-1.json \
+          infracost comment github --path=/tmp/infracost.json \
                                     --repo=$GITHUB_REPOSITORY \
                                     --github-token=${{github.token}} \
                                     --pull-request=${{github.event.pull_request.number}} \
