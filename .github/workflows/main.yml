@@ -94,13 +94,13 @@ jobs:
           name: report
           path: /tmp/infracost.json
 
-      # - name: Post Infracost comment 
-      #   run: |
-      #     infracost comment github --path=/tmp/infracost.json \
-      #                               --repo=$GITHUB_REPOSITORY \
-      #                               --github-token=${{github.token}} \
-      #                               --pull-request=${{github.event.pull_request.number}} \
-      #                               --behavior=update
+      - name: Post Infracost comment 
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+                                    --repo=$GITHUB_REPOSITORY \
+                                    --github-token=${{github.token}} \
+                                    --pull-request=${{github.event.pull_request.number}} \
+                                    --behavior=update
 
       # - name: Set up terraform
       #   uses: hashicorp/setup-terraform@v2
