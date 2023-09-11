@@ -94,13 +94,17 @@ jobs:
           name: report
           path: /tmp/infracost.json
 
-      - name: Post Infracost comment 
+      - name: Post Infracost comment if cost chance
         run: |
-          infracost comment github --path=/tmp/infracost.json \
-                                    --repo=$GITHUB_REPOSITORY \
-                                    --github-token=${{github.token}} \
-                                    --pull-request=${{github.event.pull_request.number}} \
-                                    --behavior=update
+          if grep -q '"monthlyCostAmount": 0' /tmp/infracost.json; then
+            echo "No cost change"
+          else
+            infracost comment github --path=/tmp/infracost.json \
+                                      --repo=$GITHUB_REPOSITORY \
+                                      --github-token=${{github.token}} \
+                                      --pull-request=${{github.event.pull_request.number}} \
+                                      --behavior=update
+          fi
 
       # - name: Set up terraform
       #   uses: hashicorp/setup-terraform@v2
