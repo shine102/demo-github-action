@@ -16,6 +16,10 @@ jobs:
         continue-on-error: true
         with:
           args: --sarif-file-output=snyk_iac.sarif > snyk_iac.txt
+      - name: get snyk_iac.txt
+        run: | 
+          cat snyk_iac.txt
+          exit 1
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
