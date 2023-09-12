@@ -1,36 +1,36 @@
 name: ci-cd
 
 on: 
-  pull_request:
+  push:
     branches: [ master ]
 
 jobs:
-  # scan-iac:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Run Snyk to check terraform files for security issues
-  #       uses: snyk/actions/iac@master
-  #       env:
-  #         SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
-  #       continue-on-error: true
-  #       with:
-  #         args: --sarif-file-output=snyk_iac.sarif > snyk_iac.txt
-  #     - name: Upload result to GitHub Code Scanning
-  #       uses: github/codeql-action/upload-sarif@v2
-  #       with:
-  #         sarif_file: snyk_iac.sarif
-  #     - name: Archive results
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: report
-  #         path: snyk_iac.sarif
-  #     - name: Fail pipeline if finding with severity high found
-  #       run: |
-  #         if grep -q '[High]' snyk_iac.txt || grep -q '[Critical]' snyk_iac.txt; then
-  #           echo "found!"
-  #           exit 1
-  #         fi
+  scan-iac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Snyk to check terraform files for security issues
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
+        continue-on-error: true
+        with:
+          args: --sarif-file-output=snyk_iac.sarif > snyk_iac.txt
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk_iac.sarif
+      - name: Archive results
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: snyk_iac.sarif
+      - name: Fail pipeline if finding with severity high found
+        run: |
+          if grep -q '[High]' snyk_iac.txt || grep -q '[Critical]' snyk_iac.txt; then
+            echo "found!"
+            exit 1
+          fi
   # dast-scan:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -49,62 +49,62 @@ jobs:
   #           echo "found!"
   #           exit 1
   #         fi
-  infracost:
-    name: Infracost
-    runs-on: ubuntu-latest
-    env:
-      TF_ROOT: terraform/module
-      # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      # AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-    permissions:
-      contents: read
-      # Required to post comments
-      pull-requests: write
-    steps:
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v2
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+  # infracost:
+  #   name: Infracost
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     TF_ROOT: terraform/module
+  #     # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     # AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  #   permissions:
+  #     contents: read
+  #     # Required to post comments
+  #     pull-requests: write
+  #   steps:
+  #     - name: Setup Infracost
+  #       uses: infracost/actions/setup@v2
+  #       with:
+  #         api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Checkout base branch
-        uses: actions/checkout@v3
-        with:
-          ref: '${{ github.event.pull_request.base.ref }}'
+  #     - name: Checkout base branch
+  #       uses: actions/checkout@v3
+  #       with:
+  #         ref: '${{ github.event.pull_request.base.ref }}'
 
-      - name: Generate Infracost cost estimate baseline
-        run: |
-          infracost breakdown --path=${TF_ROOT} \
-                              --format=json \
-                              --out-file=/tmp/infracost-base.json
+  #     - name: Generate Infracost cost estimate baseline
+  #       run: |
+  #         infracost breakdown --path=${TF_ROOT} \
+  #                             --format=json \
+  #                             --out-file=/tmp/infracost-base.json
   
-      - name: Checkout pr branch
-        uses: actions/checkout@v3
+  #     - name: Checkout pr branch
+  #       uses: actions/checkout@v3
       
-      - name: Generate Infracost cost diff
-        run: |
-          infracost diff --path=${TF_ROOT} \
-                        --format=json \
-                        --compare-to=/tmp/infracost-base.json \
-                        --out-file=/tmp/infracost.json
+  #     - name: Generate Infracost cost diff
+  #       run: |
+  #         infracost diff --path=${TF_ROOT} \
+  #                       --format=json \
+  #                       --compare-to=/tmp/infracost-base.json \
+  #                       --out-file=/tmp/infracost.json
       
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: report
-          path: /tmp/infracost.json
+  #     - name: Archive results
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: report
+  #         path: /tmp/infracost.json
 
-      - name: Post Infracost comment if cost chance
-        run: |
-          if grep -q '"monthlyCostAmount": 0' /tmp/infracost.json; then
-            echo "No cost change"
-          else
-            infracost comment github --path=/tmp/infracost.json \
-                                      --repo=$GITHUB_REPOSITORY \
-                                      --github-token=${{github.token}} \
-                                      --pull-request=${{github.event.pull_request.number}} \
-                                      --behavior=update
-          fi
+  #     - name: Post Infracost comment if cost chance
+  #       run: |
+  #         if grep -q '"monthlyCostAmount": 0' /tmp/infracost.json; then
+  #           echo "No cost change"
+  #         else
+  #           infracost comment github --path=/tmp/infracost.json \
+  #                                     --repo=$GITHUB_REPOSITORY \
+  #                                     --github-token=${{github.token}} \
+  #                                     --pull-request=${{github.event.pull_request.number}} \
+  #                                     --behavior=update
+  #         fi
 
       # - name: Set up terraform
       #   uses: hashicorp/setup-terraform@v2
