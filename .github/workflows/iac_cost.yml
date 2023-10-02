@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run HawkScan
-        uses: stackhawk/hawkscan-action@v2
+        uses: shine102/hawkscan-action@main
         continue-on-error: true
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
