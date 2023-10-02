@@ -6,8 +6,8 @@ app:
 hawk:
   startupTimeoutMinutes: 1
   spider:
-    base: true
-  failureThreshold: high
+    maxDurationMinutes: 1
+    
     
 
 # -- Customized Configuration for GraphQL/SOAP/OpenAPI, add here --
