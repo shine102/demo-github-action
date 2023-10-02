@@ -11,12 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run HawkScan
-        uses: shine102/hawkscan-action@main
+        uses: stackhawk/hawkscan-action@v2
         continue-on-error: true
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
           codeScanningAlerts: true
           githubToken: ${{ github.token }}
+          debug: true
   # scan-iac:
   #   runs-on: ubuntu-latest
   #   steps:
