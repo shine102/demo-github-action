@@ -1,0 +1,14 @@
+name: create-pull-req
+
+on: 
+    push:
+        branches: [test]
+
+jobs:
+    create-pull-request:
+        runs-on: ubuntu-latest\
+        steps:
+            - uses: actions/checkout@v3
+            - name: Create pull request to master branch
+              uses: peter-evans/create-pull-request@v5
+            

@@ -1,0 +1,22 @@
+app:
+  applicationId: 5d17f3f0-2654-42b3-a654-879f043a097b
+  host: http://testphp.vulnweb.com
+  env: Development
+
+hawk:
+  startupTimeoutMinutes: 1
+  spider:
+    base: true
+  failureThreshold: high
+    
+
+# -- Customized Configuration for GraphQL/SOAP/OpenAPI, add here --
+  # Configuration Docs: https://docs.stackhawk.com/hawkscan/configuration/
+
+# -- If Authenticated Scanning is needed, add here --
+  # Authenticated Scanning Docs: https://docs.stackhawk.com/hawkscan/authenticated-scanning.html
+  # Authenticated Scanning Repo: https://github.com/kaakaww/scan-configuration/tree/main/Authentication
+
+# -- Help Section --
+  # Docs: https://docs.stackhawk.com/
+  # Contact Support: support@stackhawk.com

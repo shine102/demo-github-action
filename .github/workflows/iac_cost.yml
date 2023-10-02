@@ -5,36 +5,46 @@ on:
     branches: [ master ]
 
 jobs:
-  scan-iac:
+  stackhawk:
+    name: HawkScan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run Snyk to check terraform files for security issues
-        uses: snyk/actions/iac@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
-        continue-on-error: true
+      - name: Run HawkScan
+        uses: stackhawk/hawkscan-action@v2
         with:
-          args: --sarif-file-output=snyk_iac.sarif > snyk_iac.txt
-      - name: get snyk_iac.txt
-        run: | 
-          cat snyk_iac.txt
-          exit 1
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk_iac.sarif
-      - name: Archive results
-        uses: actions/upload-artifact@v3
-        with:
-          name: report iac vulnerability scan
-          path: snyk_iac.sarif
-      - name: Fail pipeline if finding with severity high found
-        run: |
-          if grep -q '[High]' snyk_iac.txt || grep -q '[Critical]' snyk_iac.txt; then
-            echo "found!"
-            exit 1
-          fi
+          apiKey: ${{ secrets.STACKHAWK_API_KEY }}
+      
+  # scan-iac:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Run Snyk to check terraform files for security issues
+  #       uses: snyk/actions/iac@master
+  #       env:
+  #         SNYK_TOKEN: ${{ secrets.SNYK_KEY }}
+  #       continue-on-error: true
+  #       with:
+  #         args: --sarif-file-output=snyk_iac.sarif > snyk_iac.txt
+  #     - name: get snyk_iac.txt
+  #       run: | 
+  #         cat snyk_iac.txt
+  #         exit 1
+  #     - name: Upload result to GitHub Code Scanning
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: snyk_iac.sarif
+  #     - name: Archive results
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: report iac vulnerability scan
+  #         path: snyk_iac.sarif
+  #     - name: Fail pipeline if finding with severity high found
+  #       run: |
+  #         if grep -q '[High]' snyk_iac.txt || grep -q '[Critical]' snyk_iac.txt; then
+  #           echo "found!"
+  #           exit 1
+  #         fi
   # dast-scan:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -137,3 +147,5 @@ jobs:
       #                               --github-token=${{github.token}} \
       #                               --pull-request=${{github.event.pull_request.number}} \
       #                               --behavior=update
+
+    
