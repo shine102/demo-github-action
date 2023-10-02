@@ -8,8 +8,6 @@ hawk:
   spider:
     maxDurationMinutes: 1
     failureThreshold: high
-    
-
 # -- Customized Configuration for GraphQL/SOAP/OpenAPI, add here --
   # Configuration Docs: https://docs.stackhawk.com/hawkscan/configuration/
 
