@@ -15,8 +15,6 @@ jobs:
         continue-on-error: true
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
-          codeScanningAlerts: true
-          githubToken: ${{ github.token }}
           debug: true
   # scan-iac:
   #   runs-on: ubuntu-latest
