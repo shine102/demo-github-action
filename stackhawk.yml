@@ -8,5 +8,3 @@ hawk:
   spider:
     maxDurationMinutes: 1
     failureThreshold: high
-  scan:
-    maxDurationMinutes: 3
