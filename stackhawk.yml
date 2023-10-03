@@ -7,3 +7,5 @@ hawk:
   startupTimeoutMinutes: 1
   spider:
     base: false
+  scan:
+    maxDurationMinutes: 2
