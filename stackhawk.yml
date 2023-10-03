@@ -6,6 +6,7 @@ app:
 hawk:
   startupTimeoutMinutes: 1
   spider:
-    base: false
+    maxDurationMinutes: 1
+    failureThreshold: high
   scan:
-    maxDurationMinutes: 2
+    maxDurationMinutes: 3
