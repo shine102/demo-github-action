@@ -14,7 +14,29 @@ jobs:
         uses: stackhawk/hawkscan-action@v2.1.2
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
-      
+          args: |
+            > terminal_output
+      - name: Get scan Id
+        run: |
+          cat terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
+      - name: Login get authenticate token
+        run: |
+          curl --request GET \
+          --url https://api.stackhawk.com/api/v1/auth/login \
+          --header 'X-ApiKey: hawk.vMRcLYPjvwAPhM843yzT.tASa952an66Cq7Rxbv0B' \
+          --header 'accept: application/json' | grep -oP '(?<={"token":").*?(?=")' > authen_token
+      - name: Get result of scan
+        run: |
+          scan_id=`cat scan_id` ;
+          authen_token=`cat authen_token` ;
+          curl --request GET \
+          --url https://api.stackhawk.com/api/v1/scan/$scan_id/alerts \
+          --header 'accept: application/json' \
+          --header 'authorization: Bearer '$authen_token'' > stackhawk_scan.json
+      - name: test output
+        run: |
+          cat stackhawk_scan.json
+
   # scan-iac:
   #   runs-on: ubuntu-latest
   #   steps:
