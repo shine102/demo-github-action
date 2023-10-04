@@ -15,7 +15,7 @@ jobs:
         uses: stackhawk/hawkscan-action@v2.1.2
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
-          configurationFiles: stackhawk.yaml > terminal_output
+          configurationFiles: stackhawk.yml > terminal_output
 
       - name: Get scan Id
         run: |
