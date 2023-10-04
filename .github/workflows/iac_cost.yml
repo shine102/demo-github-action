@@ -15,7 +15,7 @@ jobs:
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
           args: |
-            > terminal_output
+            --no-color > terminal_output
       - name: Get scan Id
         run: |
           cat terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
