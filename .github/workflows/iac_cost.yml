@@ -15,10 +15,13 @@ jobs:
         uses: stackhawk/hawkscan-action@v2.1.2
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
+          configurationFiles: stackhawk.yaml
+          args: |
+            --hawk-mem 1g > terminal_output
 
       - name: Get scan Id
         run: |
-          ${{steps.hawkscan.outputs.stdout}} | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
+          echo terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
       - name: Login get authenticate token
         run: |
           curl --request GET \
