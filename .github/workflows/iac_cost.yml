@@ -10,13 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run HawkScan
-        id: hawkscan
+      - name: Install HawkScan
         uses: stackhawk/hawkscan-action@v2.1.2
         with:
+          installCLIOnly: true
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
-          configurationFiles: stackhawk.yml > terminal_output
-
+      - name: Run HawkScan
+        run: |
+          hawk --api-key=${{ secrets.STACKHAWK_API_KEY }} scan > terminal_output
       - name: Get scan Id
         run: |
           echo terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
