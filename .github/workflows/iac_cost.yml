@@ -14,11 +14,11 @@ jobs:
         uses: stackhawk/hawkscan-action@v2.1.2
         with:
           apiKey: ${{ secrets.STACKHAWK_API_KEY }}
-          args: |
-            --no-color > terminal_output
+        id: hawkscan
+
       - name: Get scan Id
         run: |
-          cat terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
+          echo ${{steps.hawkscan.outputs}} | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id
       - name: Login get authenticate token
         run: |
           curl --request GET \
