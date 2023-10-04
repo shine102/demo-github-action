@@ -21,7 +21,7 @@ jobs:
           cat terminal_output
       - name: Get scan Id
         run: |
-          echo terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id;
+          cat terminal_output | grep 'View on StackHawk platform: https://app.stackhawk.com/scans/' | head -1 | cut -d "/" -f 5 > scan_id;
           cat scan_id
       - name: Login get authenticate token
         run: |
