@@ -1,6 +1,6 @@
 app:
   applicationId: 5d17f3f0-2654-42b3-a654-879f043a097b
-  host: http://testphp.vulnweb.com
+  host: https://iac-demo-dev.episourcedev.com
   env: Development
 
 hawk:
