@@ -6,4 +6,4 @@ app:
 hawk:
   startupTimeoutMinutes: 1
   scan:
-    maxDurationMinutes: 2
+    maxDurationMinutes: 3
