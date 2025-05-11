@@ -1,2 +1,2 @@
 # demo-github-action
-Demo for github action on python language
+Demo for github action on python / terraform
